@@ -65,7 +65,7 @@ const statusMap = {
   }).required(),
   transform: ({ json }) => ({
     state: json.state,
-    milestone: json?.milestone?.title ?? "",
+    milestone: (json.milestone && json.milestone.title) || "",
     // Because eslint will not be happy with this snake_case name :(
     merged: json.merged_at !== null,
   }),
