@@ -56,7 +56,7 @@ const stateMap = {
   },
 }
 
-const statusMap = {
+const milestoneMap = {
   schema: Joi.object({
     ...commonSchemaFields,
     state: Joi.string().allow('open', 'closed').required(),
@@ -74,7 +74,7 @@ const statusMap = {
     // Because eslint will not be happy with this snake_case name :(
     merged: json.merged_at !== null,
   }),
-  render: ({ value, isPR, number }) => {
+  render: ({ value, isPR, number, user, repo }) => {
     const state = value.state
     const label = `${isPR ? 'pull request' : 'issue'} ${number}`
 
@@ -82,18 +82,20 @@ const statusMap = {
       return {
         color: stateColor(state),
         label,
-        message: `${state} ${value.milestone}`,
+        message: `${state.toUpperCase()} ${value.milestone}`,
+        link: `https://github.com/${user}/${repo}/${isPR ? 'pull' : 'issue'}/${number}`,
+        title: `#${number}`
       }
     } else if (value.merged) {
       return {
         label,
-        message: 'merged',
+        message: 'MERGED',
         color: 'blueviolet',
       }
     } else
       return {
         label,
-        message: 'rejected',
+        message: 'REJECTED',
         color: 'red',
       }
   },
@@ -189,7 +191,7 @@ const ageUpdateMap = {
 
 const propertyMap = {
   state: stateMap,
-  status: statusMap,
+  milestone: milestoneMap,
   title: titleMap,
   author: authorMap,
   label: labelMap,
@@ -203,7 +205,7 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
   static route = {
     base: 'github',
     pattern:
-      ':issueKind(issues|pulls)/detail/:property(state|status|title|author|label|comments|age|last-update)/:user/:repo/:number([0-9]+)',
+      ':issueKind(issues|pulls)/detail/:property(state|milestone|title|author|label|comments|age|last-update)/:user/:repo/:number([0-9]+)',
   }
 
   static examples = [
@@ -224,7 +226,7 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
       }),
       keywords: [
         'state',
-        'status',
+        'milestone',
         'title',
         'author',
         'label',
@@ -241,8 +243,8 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
     color: 'informational',
   }
 
-  static render({ property, value, isPR, number }) {
-    return propertyMap[property].render({ property, value, isPR, number })
+  static render({ property, value, isPR, number, user, repo }) {
+    return propertyMap[property].render({ property, value, isPR, number, user, repo })
   }
 
   async fetch({ issueKind, property, user, repo, number }) {
@@ -262,6 +264,6 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
   async handle({ issueKind, property, user, repo, number }) {
     const json = await this.fetch({ issueKind, property, user, repo, number })
     const { value, isPR } = this.transform({ json, property, issueKind })
-    return this.constructor.render({ property, value, isPR, number })
+    return this.constructor.render({ property, value, isPR, number, user, repo })
   }
 }
