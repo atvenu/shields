@@ -84,7 +84,6 @@ const milestoneMap = {
         label,
         message: `${state.toUpperCase()} ${value.milestone}`,
         link: `https://github.com/${user}/${repo}/${isPR ? 'pull' : 'issue'}/${number}`,
-        title: `#${number}`
       }
     } else if (value.merged) {
       return {
@@ -210,7 +209,7 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
 
   static examples = [
     {
-      title: 'GitHub issue/pull request detail',
+      title: 'GitHub issue or pull request detail',
       namedParams: {
         issueKind: 'issues',
         property: 'state',
