@@ -1,12 +1,12 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import groupBy from 'lodash.groupby'
+// import groupBy from 'lodash.groupby'
 import {
   ServiceDefinition,
   Example,
-  categories,
+  // categories,
   findCategory,
-  services,
+  // services,
   getDefinitionsForCategory,
   RenderableExample,
 } from '../lib/service-definitions'
@@ -14,16 +14,16 @@ import ServiceDefinitionSetHelper from '../lib/service-definitions/service-defin
 import { getBaseUrl } from '../constants'
 import Meta from './meta'
 import Header from './header'
-import SuggestionAndSearch from './suggestion-and-search'
-import DonateBox from './donate'
+// import SuggestionAndSearch from './suggestion-and-search'
+// import DonateBox from './donate'
 import { MarkupModal } from './markup-modal'
-import Usage from './usage'
+// import Usage from './usage'
 import Footer from './footer'
 import {
   Category,
   CategoryHeading,
-  CategoryHeadings,
-  CategoryNav,
+  // CategoryHeadings,
+  // CategoryNav,
 } from './category-headings'
 import { BadgeExamples } from './badge-examples'
 import { BaseFont, GlobalStyle } from './common'
@@ -43,58 +43,59 @@ export default function Main({
 }: {
   pageContext: PageContext
 }): JSX.Element {
-  const [searchIsInProgress, setSearchIsInProgress] = useState(false)
-  const [queryIsTooShort, setQueryIsTooShort] = useState(false)
-  const [searchResults, setSearchResults] = useState<{
-    [k: string]: ServiceDefinition[]
-  }>()
+  // const [searchIsInProgress, setSearchIsInProgress] = useState(false)
+  // const [queryIsTooShort, setQueryIsTooShort] = useState(false)
+  // const [searchResults, setSearchResults] = useState<{
+  //   [k: string]: ServiceDefinition[]
+  // }>()
   const [selectedExample, setSelectedExample] = useState<RenderableExample>()
   const [
     selectedExampleIsSuggestion,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setSelectedExampleIsSuggestion,
   ] = useState(false)
-  const searchTimeout = useRef(0)
+  // const searchTimeout = useRef(0)
   const baseUrl = getBaseUrl()
 
-  function performSearch(query: string): void {
-    setSearchIsInProgress(false)
+  // function performSearch(query: string): void {
+  //   setSearchIsInProgress(false)
+  //
+  //   setQueryIsTooShort(query.length === 1)
+  //
+  //   if (query.length >= 2) {
+  //     const flat = ServiceDefinitionSetHelper.create(services)
+  //       .notDeprecated()
+  //       .search(query)
+  //       .toArray()
+  //     setSearchResults(groupBy(flat, 'category'))
+  //   } else {
+  //     setSearchResults(undefined)
+  //   }
+  // }
 
-    setQueryIsTooShort(query.length === 1)
+  // function searchQueryChanged(query: string): void {
+  //   /*
+  //   Add a small delay before showing search results
+  //   so that we wait until the user has stopped typing
+  //   before we start loading stuff.
+  //
+  //   This
+  //   a) reduces the amount of badges we will load and
+  //   b) stops the page from 'flashing' as the user types, like this:
+  //   https://user-images.githubusercontent.com/7288322/42600206-9b278470-85b5-11e8-9f63-eb4a0c31cb4a.gif
+  //   */
+  //   // setSearchIsInProgress(true)
+  //   window.clearTimeout(searchTimeout.current)
+  //   searchTimeout.current = window.setTimeout(() => performSearch(query), 500)
+  // }
 
-    if (query.length >= 2) {
-      const flat = ServiceDefinitionSetHelper.create(services)
-        .notDeprecated()
-        .search(query)
-        .toArray()
-      setSearchResults(groupBy(flat, 'category'))
-    } else {
-      setSearchResults(undefined)
-    }
-  }
-
-  function searchQueryChanged(query: string): void {
-    /*
-    Add a small delay before showing search results
-    so that we wait until the user has stopped typing
-    before we start loading stuff.
-
-    This
-    a) reduces the amount of badges we will load and
-    b) stops the page from 'flashing' as the user types, like this:
-    https://user-images.githubusercontent.com/7288322/42600206-9b278470-85b5-11e8-9f63-eb4a0c31cb4a.gif
-    */
-    setSearchIsInProgress(true)
-    window.clearTimeout(searchTimeout.current)
-    searchTimeout.current = window.setTimeout(() => performSearch(query), 500)
-  }
-
-  function exampleClicked(
-    example: RenderableExample,
-    isSuggestion: boolean
-  ): void {
-    setSelectedExample(example)
-    setSelectedExampleIsSuggestion(isSuggestion)
-  }
+  // function exampleClicked(
+  //   example: RenderableExample,
+  //   isSuggestion: boolean
+  // ): void {
+  //   setSelectedExample(example)
+  //   setSelectedExampleIsSuggestion(isSuggestion)
+  // }
 
   function dismissMarkupModal(): void {
     setSelectedExample(undefined)
@@ -125,48 +126,58 @@ export default function Main({
     )
   }
 
-  function renderMain(): JSX.Element | JSX.Element[] {
-    const { category } = pageContext
+  // function renderMain(): JSX.Element | JSX.Element[] {
+  //   const { category } = pageContext
+  //
+  //   if (searchIsInProgress) {
+  //     return <div>searching...</div>
+  //   } else if (queryIsTooShort) {
+  //     return <div>Search term must have 2 or more characters</div>
+  //   } else if (searchResults) {
+  //     return Object.entries(searchResults).map(([categoryId, definitions]) => {
+  //       const category = findCategory(categoryId)
+  //       if (category === undefined) {
+  //         throw Error(`Couldn't find category: ${categoryId}`)
+  //       }
+  //       return (
+  //         <Category
+  //           category={category}
+  //           definitions={definitions}
+  //           key={categoryId}
+  //         />
+  //       )
+  //     })
+  //   } else if (category) {
+  //     const definitions = ServiceDefinitionSetHelper.create(
+  //       getDefinitionsForCategory(category.id)
+  //     )
+  //       .notDeprecated()
+  //       .toArray()
+  //     return (
+  //       <div>
+  //         <CategoryNav categories={categories} />
+  //         <Category
+  //           category={category}
+  //           definitions={definitions}
+  //           key={category.id}
+  //         />
+  //       </div>
+  //     )
+  //   } else {
+  //     return <CategoryHeadings categories={categories} />
+  //   }
+  // }
+  const category = findCategory('issue-tracking')
+  // @ts-ignore
+  // eslint-disable-next-line react/prop-types
+  const categoryId = category.id
+  const definitions = ServiceDefinitionSetHelper.create(
+    getDefinitionsForCategory(categoryId)
+  )
+    .notDeprecated()
+    .toArray()
 
-    if (searchIsInProgress) {
-      return <div>searching...</div>
-    } else if (queryIsTooShort) {
-      return <div>Search term must have 2 or more characters</div>
-    } else if (searchResults) {
-      return Object.entries(searchResults).map(([categoryId, definitions]) => {
-        const category = findCategory(categoryId)
-        if (category === undefined) {
-          throw Error(`Couldn't find category: ${categoryId}`)
-        }
-        return (
-          <Category
-            category={category}
-            definitions={definitions}
-            key={categoryId}
-          />
-        )
-      })
-    } else if (category) {
-      const definitions = ServiceDefinitionSetHelper.create(
-        getDefinitionsForCategory(category.id)
-      )
-        .notDeprecated()
-        .toArray()
-      return (
-        <div>
-          <CategoryNav categories={categories} />
-          <Category
-            category={category}
-            definitions={definitions}
-            key={category.id}
-          />
-        </div>
-      )
-    } else {
-      return <CategoryHeadings categories={categories} />
-    }
-  }
-
+  // @ts-ignore
   return (
     <AppContainer id="app">
       <GlobalStyle />
@@ -178,16 +189,12 @@ export default function Main({
         isBadgeSuggestion={selectedExampleIsSuggestion}
         onRequestClose={dismissMarkupModal}
       />
-      <section>
-        <SuggestionAndSearch
-          baseUrl={baseUrl}
-          onBadgeClick={exampleClicked}
-          queryChanged={searchQueryChanged}
-        />
-        <DonateBox />
-      </section>
-      {renderMain()}
-      <Usage baseUrl={baseUrl} />
+      <Category
+        category={category}
+        definitions={definitions}
+        key={categoryId}
+      />
+
       <Footer baseUrl={baseUrl} />
     </AppContainer>
   )
