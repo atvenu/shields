@@ -61,17 +61,20 @@ const statusMap = {
     ...commonSchemaFields,
     state: Joi.string().allow('open', 'closed').required(),
     merged_at: Joi.string().allow(null),
-    milestone: Joi.object({
-      title: Joi.string()
-    }),
+    milestone: Joi.alternatives([
+      Joi.object({
+        title: Joi.string()
+      }),
+      null
+    ]),
   }).required(),
   transform: ({ json }) => ({
     state: json.state,
-    milestone: (json.milestone && json.milestone.title) || "",
+    milestone: (json.milestone && json.milestone.title) || "No Milestone",
     // Because eslint will not be happy with this snake_case name :(
     merged: json.merged_at !== null,
   }),
-  render: ({ value, isPR, number, milestone }) => {
+  render: ({ value, isPR, number }) => {
     const state = value.state
     const label = `${isPR ? 'pull request' : 'issue'} ${number}`
 
@@ -79,7 +82,7 @@ const statusMap = {
       return {
         color: stateColor(state),
         label,
-        message: `${state} ${milestone}`,
+        message: `${state} ${value.milestone}`,
       }
     } else if (value.merged) {
       return {
