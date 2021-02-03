@@ -61,7 +61,9 @@ const statusMap = {
     ...commonSchemaFields,
     state: Joi.string().allow('open', 'closed').required(),
     merged_at: Joi.string().allow(null),
-    milestone: Joi.string().required(),
+    milestone: Joi.object({
+      title: Joi.string()
+    }),
   }).required(),
   transform: ({ json }) => ({
     state: json.state,
