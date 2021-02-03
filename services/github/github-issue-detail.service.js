@@ -18,11 +18,13 @@ const commonSchemaFields = {
   pull_request: Joi.any(),
 }
 
+
+
 const stateMap = {
   schema: Joi.object({
     ...commonSchemaFields,
     state: Joi.string().allow('open', 'closed').required(),
-    merged_at: Joi.string().allow(null),
+    merged_at: Joi.string({}).allow(null),
   }).required(),
   transform: ({ json }) => ({
     state: json.state,
@@ -38,6 +40,44 @@ const stateMap = {
         color: stateColor(state),
         label,
         message: state,
+      }
+    } else if (value.merged) {
+      return {
+        label,
+        message: 'merged',
+        color: 'blueviolet',
+      }
+    } else
+      return {
+        label,
+        message: 'rejected',
+        color: 'red',
+      }
+  },
+}
+
+const statusMap = {
+  schema: Joi.object({
+    ...commonSchemaFields,
+    state: Joi.string().allow('open', 'closed').required(),
+    merged_at: Joi.string().allow(null),
+    milestone: Joi.string().required(),
+  }).required(),
+  transform: ({ json }) => ({
+    state: json.state,
+    milestone: json?.milestone?.title ?? "",
+    // Because eslint will not be happy with this snake_case name :(
+    merged: json.merged_at !== null,
+  }),
+  render: ({ value, isPR, number, milestone }) => {
+    const state = value.state
+    const label = `${isPR ? 'pull request' : 'issue'} ${number}`
+
+    if (!isPR || state === 'open') {
+      return {
+        color: stateColor(state),
+        label,
+        message: `${state} ${milestone}`,
       }
     } else if (value.merged) {
       return {
@@ -144,6 +184,7 @@ const ageUpdateMap = {
 
 const propertyMap = {
   state: stateMap,
+  status: statusMap,
   title: titleMap,
   author: authorMap,
   label: labelMap,
@@ -157,7 +198,7 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
   static route = {
     base: 'github',
     pattern:
-      ':issueKind(issues|pulls)/detail/:property(state|title|author|label|comments|age|last-update)/:user/:repo/:number([0-9]+)',
+      ':issueKind(issues|pulls)/detail/:property(state|status|title|author|label|comments|age|last-update)/:user/:repo/:number([0-9]+)',
   }
 
   static examples = [
@@ -178,6 +219,7 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
       }),
       keywords: [
         'state',
+        'status',
         'title',
         'author',
         'label',
