@@ -30,6 +30,15 @@ const globalQueryParams = new Set([
   'labelColor',
 ])
 
+function markdown(badgeUrl, link, title) {
+  const withoutLink = `![${title || ''}](${badgeUrl})`
+  if (link) {
+    return `[${withoutLink}](${link})`
+  } else {
+    return `${withoutLink}`
+  }
+}
+
 function flattenQueryParams(queryParams) {
   const union = new Set(globalQueryParams)
   ;(queryParams || []).forEach(name => {
@@ -192,7 +201,16 @@ function handleRequest(cacheHeaderConfig, handlerOptions) {
         clearTimeout(serverResponsive)
         // Add format to badge data.
         badgeData.format = format
-        const svg = makeBadge(badgeData)
+        const svg =
+          format === 'md'
+            ? markdown(
+                `${
+                  process.env.NODE_ENV === 'production' ? 'https:' : 'http:'
+                }//${ask.req.headers.host}${match.input.replace('.md', '')}`,
+                badgeData.links && badgeData.links[0],
+                badgeData.label
+              )
+            : makeBadge(badgeData)
         setCacheHeadersOnResponse(ask.res, badgeData.cacheLengthSeconds)
         makeSend(format, ask.res, end)(svg)
       },

@@ -68,12 +68,18 @@ export default function Customizer({
 
   async function copyMarkup(markupFormat: MarkupFormat): Promise<void> {
     const builtBadgeUrl = generateBuiltBadgeUrl()
-    const markup = generateMarkup({
-      badgeUrl: builtBadgeUrl,
-      link,
-      title,
-      markupFormat,
-    })
+    let markup
+    if (markupFormat === 'markdown') {
+      const response = await fetch(`${builtBadgeUrl}.md`)
+      markup = await response.text()
+    } else {
+      markup = generateMarkup({
+        badgeUrl: builtBadgeUrl,
+        link,
+        title,
+        markupFormat,
+      })
+    }
 
     try {
       await clipboardCopy(markup)

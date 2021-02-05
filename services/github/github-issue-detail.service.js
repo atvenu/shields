@@ -18,8 +18,6 @@ const commonSchemaFields = {
   pull_request: Joi.any(),
 }
 
-
-
 const stateMap = {
   schema: Joi.object({
     ...commonSchemaFields,
@@ -63,14 +61,14 @@ const milestoneMap = {
     merged_at: Joi.string().allow(null),
     milestone: Joi.alternatives([
       Joi.object({
-        title: Joi.string()
+        title: Joi.string(),
       }),
-      null
+      null,
     ]),
   }).required(),
   transform: ({ json }) => ({
     state: json.state,
-    milestone: (json.milestone && json.milestone.title) || "No Milestone",
+    milestone: (json.milestone && json.milestone.title) || 'No Milestone',
     // Because eslint will not be happy with this snake_case name :(
     merged: json.merged_at !== null,
   }),
@@ -83,7 +81,9 @@ const milestoneMap = {
         color: stateColor(state),
         label,
         message: `${state.toUpperCase()} ${value.milestone}`,
-        link: `https://github.com/${user}/${repo}/${isPR ? 'pull' : 'issue'}/${number}`,
+        link: `https://github.com/${user}/${repo}/${
+          isPR ? 'pull' : 'issues'
+        }/${number}`,
       }
     } else if (value.merged) {
       return {
@@ -243,7 +243,14 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
   }
 
   static render({ property, value, isPR, number, user, repo }) {
-    return propertyMap[property].render({ property, value, isPR, number, user, repo })
+    return propertyMap[property].render({
+      property,
+      value,
+      isPR,
+      number,
+      user,
+      repo,
+    })
   }
 
   async fetch({ issueKind, property, user, repo, number }) {
@@ -263,6 +270,13 @@ module.exports = class GithubIssueDetail extends GithubAuthV3Service {
   async handle({ issueKind, property, user, repo, number }) {
     const json = await this.fetch({ issueKind, property, user, repo, number })
     const { value, isPR } = this.transform({ json, property, issueKind })
-    return this.constructor.render({ property, value, isPR, number, user, repo })
+    return this.constructor.render({
+      property,
+      value,
+      isPR,
+      number,
+      user,
+      repo,
+    })
   }
 }

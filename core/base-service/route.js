@@ -26,7 +26,7 @@ function assertValidRoute(route, message = undefined) {
 }
 
 function prepareRoute({ base, pattern, format, capture, withPng }) {
-  const extensionRegex = ['', '.svg', '.json']
+  const extensionRegex = ['', '.svg', '.json', '.md']
     .concat(withPng ? ['.png'] : [])
     .map(escapeStringRegexp)
     .join('|')

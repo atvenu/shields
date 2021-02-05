@@ -22,11 +22,19 @@ function sendJSON(res, askres, end) {
   end(null, { template: streamFromString(res) })
 }
 
+function sendText(res, askres, end) {
+  askres.setHeader('Content-Type', 'application/text')
+  askres.setHeader('Access-Control-Allow-Origin', '*')
+  end(null, { template: streamFromString(res) })
+}
+
 function makeSend(format, askres, end) {
   if (format === 'svg') {
     return res => sendSVG(res, askres, end)
   } else if (format === 'json') {
     return res => sendJSON(res, askres, end)
+  } else if (format === 'md') {
+    return res => sendText(res, askres, end)
   } else {
     throw Error(`Unrecognized format: ${format}`)
   }
